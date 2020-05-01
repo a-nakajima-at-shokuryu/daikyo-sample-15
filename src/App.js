@@ -33,6 +33,12 @@ import InputIcon from '@material-ui/icons/Input'
 import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 
+// Apollo-Client
+import { InMemoryCache } from 'apollo-cache-inmemory'
+import { HttpLink } from 'apollo-link-http'
+import { ApolloClient } from 'apollo-client'
+import { ApolloProvider } from 'react-apollo-hooks'
+
 // スタイル
 const drawerWidth = 240
 const useStyles = makeStyles((theme) => ({
@@ -98,6 +104,20 @@ const useStyles = makeStyles((theme) => ({
 
 const PersistentDrawerLeft = () => {
 
+  // キャッシュ
+  const cache = new InMemoryCache()
+
+  // GraphQLのエンドポイント
+  const httpLink = new HttpLink({
+    uri: 'https://daiei-apollo-one.now.sh/',
+  })
+
+  // Apollo-Clientの設定
+  const client = new ApolloClient({
+    link: httpLink,
+    cache,
+  })
+
   // スタイル・テーマ
   const classes = useStyles()
   const theme = useTheme()
@@ -115,73 +135,75 @@ const PersistentDrawerLeft = () => {
 
   return (
     <div className={classes.root}>
-      <BrowserRouter>
-        <CssBaseline />
-        <AppBar
-          position="fixed"
-          className={clsx(classes.appBar, {
-            [classes.appBarShift]: open,
-          })}
-        >
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              className={clsx(classes.menuButton, open && classes.hide)}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap>
-              大京サンプル
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <Drawer
-          className={classes.drawer}
-          variant="persistent"
-          anchor="left"
-          open={open}
-          classes={{
-            paper: classes.drawerPaper,
-          }}
-        >
-          <div className={classes.drawerHeader}>
-            <IconButton onClick={handleDrawerClose}>
-              {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-            </IconButton>
-          </div>
-          <Divider />
-          <List>
-            <Link to="fax-input" className={classes.link}>
-              <ListItem button key="FAX Input">
-                <ListItemIcon><PictureAsPdfIcon /></ListItemIcon>
-                <ListItemText primary="FAX見ながら登録" />
-              </ListItem>
-            </Link>
-            <Link to="choba-input" className={classes.link}>
-              <ListItem button key="Choba Input">
-                <ListItemIcon><InputIcon /></ListItemIcon>
-                <ListItemText primary="帳場での受注登録" />
-              </ListItem>
-            </Link>
-          </List>
-        </Drawer>
-        <main
-          className={clsx(classes.content, {
-            [classes.contentShift]: open,
-          })}
-        >
-          <div className={classes.drawerHeader} />
-          <Switch>
-            <Route exact path="/" component={FaxInput} />
-            <Route path="/fax-input" component={FaxInput} />
-            <Route path="/choba-input" component={ChobaInput} />
-            <Redirect to="/" />
-          </Switch>
-        </main>
-      </BrowserRouter>
+      <ApolloProvider client={client}>
+        <BrowserRouter>
+          <CssBaseline />
+          <AppBar
+            position="fixed"
+            className={clsx(classes.appBar, {
+              [classes.appBarShift]: open,
+            })}
+          >
+            <Toolbar>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleDrawerOpen}
+                edge="start"
+                className={clsx(classes.menuButton, open && classes.hide)}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography variant="h6" noWrap>
+                大京サンプル
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          <Drawer
+            className={classes.drawer}
+            variant="persistent"
+            anchor="left"
+            open={open}
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+          >
+            <div className={classes.drawerHeader}>
+              <IconButton onClick={handleDrawerClose}>
+                {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+              </IconButton>
+            </div>
+            <Divider />
+            <List>
+              <Link to="fax-input" className={classes.link}>
+                <ListItem button key="FAX Input">
+                  <ListItemIcon><PictureAsPdfIcon /></ListItemIcon>
+                  <ListItemText primary="FAX見ながら登録" />
+                </ListItem>
+              </Link>
+              <Link to="choba-input" className={classes.link}>
+                <ListItem button key="Choba Input">
+                  <ListItemIcon><InputIcon /></ListItemIcon>
+                  <ListItemText primary="帳場での受注登録" />
+                </ListItem>
+              </Link>
+            </List>
+          </Drawer>
+          <main
+            className={clsx(classes.content, {
+              [classes.contentShift]: open,
+            })}
+          >
+            <div className={classes.drawerHeader} />
+            <Switch>
+              <Route exact path="/" component={FaxInput} />
+              <Route path="/fax-input" component={FaxInput} />
+              <Route path="/choba-input" component={ChobaInput} />
+              <Redirect to="/" />
+            </Switch>
+          </main>
+        </BrowserRouter>
+      </ApolloProvider>
     </div>
   )
 }

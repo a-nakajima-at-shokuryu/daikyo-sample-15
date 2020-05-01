@@ -1,6 +1,10 @@
 # daikyo-sample-15
 大京のサンプル15
 
+## マスタデータ取得元リポジトリ
+https://daiei-apollo-one.now.sh/
+
+
 ## FAXを見ながら登録
 ![キャプチャ1](Capture1.png)
 

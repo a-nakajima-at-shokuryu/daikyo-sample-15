@@ -5,24 +5,25 @@ import { Helmet } from 'react-helmet'
 import {
   Grid,
   Typography,
-  InputLabel,
-  Select,
-  MenuItem,
   Button,
-  createMuiTheme,
-  MuiThemeProvider,
-  CssBaseline,
+  TextField,
 } from '@material-ui/core/'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
+import Autocomplete from '@material-ui/lab/Autocomplete'
 
 // Material-UI（DatePicker関連）
 import DateFnsUtils from '@date-io/date-fns'
 import ja from 'date-fns/locale/ja'
-import format from 'date-fns/format'
 import {MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers';
 
 // React Spreadsheet
 import Spreadsheet from 'react-spreadsheet'
+
+// GraphQL
+import gql from 'graphql-tag'
+
+// Apollo-Client
+import { useQuery } from 'react-apollo-hooks'
 
 // スタイル
 const useStyles = makeStyles((theme) => ({
@@ -32,18 +33,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-// 得意先リスト
-const tokuiList = [
-  {'id': '10', 'name': '得意先A'},
-  {'id': '20', 'name': '得意先B'},
-  {'id': '30', 'name': '得意先C'},
-  {'id': '5343', 'name': 'XXXXキッチン駒沢店'},
-  {'id': '5344', 'name': 'XXXXキッチン○○店'},
-  {'id': '5345', 'name': 'XXXXキッチン△△店'},
-]
+// マスタデータ取得クエリ
+const GET_DATA = gql`
+  query {
+    urisaki(buscd: "0281") {
+      AITCD
+      MEISJ
+      SEISJ
+    }
+  }
+`
 
 // スプレッドのデータ
-const data = [
+const detail = [
   [{value: '商品'}, {value: '単価'}, {value: '数量'}],
   [{value: '産地〆マダイ養殖'}, {value: 100}, {value: ''}],
   [{value: 'アトランティクサーモン養殖'}, {value: 200}, {value: ''}],
@@ -54,19 +56,29 @@ const FaxInput = () => {
 
   // スタイル・テーマ
   const classes = useStyles()
-  const theme = useTheme()
 
   // ステートフック
   const [nohinbi, setNohinbi] = useState(new Date())
 
-  // 日付変更時
-  const doChange = date => {
+  // 納品日変更時
+  const doNohinbiChange = date => {
     if (date !== null) {
       if (date.toString() !== "Invalid Date") {
         setNohinbi(date)
       }
     }
   }
+
+  // データ取得
+  // fetchPolicy: 'cache-and-network' を指定することで、
+  // 画面遷移が起こったタイミングで、キャッシュorネットワークからデータを取得して再表示する
+  const { loading, error, data } = useQuery(GET_DATA, {
+    fetchPolicy: 'cache-and-network',
+  })
+
+  // 通信状態に応じたコンポーネントを表示
+  if (loading) return <p>Loading...</p>
+  if (error) return <p>Error: {error.message}</p>
 
   return (
     <div>
@@ -80,17 +92,20 @@ const FaxInput = () => {
       </Grid>
       <Grid container spacing={2}>
         <Grid item xs={6}>
-          <iframe src={`${process.env.PUBLIC_URL}/sample.pdf`} className={classes.iframe} />
+          <iframe title="FaxPdf" src={`${process.env.PUBLIC_URL}/sample.pdf`} className={classes.iframe} />
         </Grid>
         <Grid item xs={6}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <InputLabel id="tokui-label">得意先</InputLabel>
-              <Select labelId="tokui-label" value="5343">
-                {tokuiList.map(item => (
-                  <MenuItem value={item.id}>{item.id} - {item.name}</MenuItem>
-                ))}
-              </Select>
+              <Autocomplete
+                options={data.urisaki}
+                defaultValue={data.urisaki[0]}
+                getOptionLabel={(option) => option.AITCD + " - " + option.MEISJ}
+                style={{ width: 400 }}
+                renderInput={(params) =>
+                  <TextField {...params} label="得意先" />
+                }
+              />
               <Typography variant="caption" display="block" gutterBottom>
                 ※FAX受信元(電話番号等)より得意先を判別して自動選択<br />
                 ※後から変更も可能？
@@ -104,7 +119,7 @@ const FaxInput = () => {
                   format="yyyy-MM-dd"
                   locale={ja}
                   value={nohinbi}
-                  onChange={doChange}
+                  onChange={doNohinbiChange}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
                   }}
@@ -115,7 +130,7 @@ const FaxInput = () => {
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Spreadsheet data={data} />
+              <Spreadsheet data={detail} />
               <Typography variant="caption" display="block" gutterBottom>
                 ※当該得意先について、過去（前回）に入力した商品と単価を一覧表示<br />
                 ※商品の追加可能<br />
