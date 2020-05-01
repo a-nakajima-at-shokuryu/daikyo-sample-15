@@ -70,10 +70,12 @@ const FaxInput = () => {
   }
 
   // データ取得
-  // fetchPolicy: 'cache-and-network' を指定することで、
-  // 画面遷移が起こったタイミングで、キャッシュorネットワークからデータを取得して再表示する
+  // fetchPolicy:
+  // 'cache-and-network': 画面遷移が起こったタイミングで、キャッシュorネットワークからデータを取得して再表示する
+  // 'cache-first': 常に最初にキャッシュからデータを読み取ろうとする
   const { loading, error, data } = useQuery(GET_DATA, {
-    fetchPolicy: 'cache-and-network',
+    // fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'cache-first',
   })
 
   // 通信状態に応じたコンポーネントを表示
