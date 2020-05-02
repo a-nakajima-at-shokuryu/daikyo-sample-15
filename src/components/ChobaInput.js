@@ -41,20 +41,22 @@ const useStyles = makeStyles((theme) => ({
 const GET_DATA = gql`
   query {
 
-    urisaki(buscd: "0281") {
-      AITCD
-      MEISJ
-      SEISJ
+    urisaki2 {
+      AIT_AITCD
+      AIT_MEISJ
+      AIT_SEISJ
     }
 
-    hinsyu (
-      offset: 0
-      chunk: 100
-    ) {
-      HINCD
-      HINNM
-      SIZEN
-      JYURY
+    gzaikozan {
+      GZA_ZSHNO
+      HIZ_HINNM
+      HIZ_SIZEN
+      HIZ_YORYO
+      HIZ_JURKB
+      HIZ_IRISU
+      GZA_IKUCD
+  	  GZA_TAICD
+      GZA_HTANK
     }
 
   }
@@ -107,7 +109,7 @@ const ChobaInput = () => {
   // 商品変更時
   const doShohinChange = (e, newval) => {
     if (newval !== null) {
-      setTanka(newval.JYURY)
+      setTanka(newval.GZA_HTANK)
     }
   } 
 
@@ -139,8 +141,8 @@ const ChobaInput = () => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Autocomplete
-                options={data.urisaki}
-                getOptionLabel={(option) => option.AITCD + " - " + option.MEISJ}
+                options={data.urisaki2}
+                getOptionLabel={(option) => option.AIT_AITCD + " - " + option.AIT_MEISJ}
                 style={{ width: 400 }}
                 renderInput={(params) =>
                   <TextField {...params} label="得意先" />
@@ -180,9 +182,17 @@ const ChobaInput = () => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Autocomplete
-                options={data.hinsyu}
-                getOptionLabel={(option) => option.HINCD + " - " + option.HINNM + " " + option.SIZEN}
-                style={{ width: 400 }}
+                options={data.gzaikozan}
+                getOptionLabel={(option) =>
+                  option.GZA_ZSHNO + " - " +
+                  option.HIZ_HINNM + " " +
+                  option.HIZ_SIZEN + " " +
+                  option.HIZ_YORYO + option.HIZ_JURKB + " " +
+                  option.HIZ_IRISU + " " +
+                  option.GZA_IKUCD + " " +
+                  option.GZA_TAICD
+                }
+                style={{ width: 500 }}
                 onChange={(e, newval) => doShohinChange(e, newval)}
                 renderInput={(params) =>
                   <TextField {...params} label="商品" />

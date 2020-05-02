@@ -36,10 +36,10 @@ const useStyles = makeStyles((theme) => ({
 // マスタデータ取得クエリ
 const GET_DATA = gql`
   query {
-    urisaki(buscd: "0281") {
-      AITCD
-      MEISJ
-      SEISJ
+    urisaki2 {
+      AIT_AITCD
+      AIT_MEISJ
+      AIT_SEISJ
     }
   }
 `
@@ -100,9 +100,9 @@ const FaxInput = () => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Autocomplete
-                options={data.urisaki}
-                defaultValue={data.urisaki[0]}
-                getOptionLabel={(option) => option.AITCD + " - " + option.MEISJ}
+                options={data.urisaki2}
+                defaultValue={data.urisaki2[0]}
+                getOptionLabel={(option) => option.AIT_AITCD + " - " + option.AIT_MEISJ}
                 style={{ width: 400 }}
                 renderInput={(params) =>
                   <TextField {...params} label="得意先" />
