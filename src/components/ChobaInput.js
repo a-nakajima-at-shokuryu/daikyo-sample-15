@@ -192,7 +192,7 @@ const ChobaInput = () => {
                   option.GZA_IKUCD + " " +
                   option.GZA_TAICD
                 }
-                style={{ width: 500 }}
+                style={{ width: 400 }}
                 onChange={(e, newval) => doShohinChange(e, newval)}
                 renderInput={(params) =>
                   <TextField {...params} label="商品" />
