@@ -128,6 +128,22 @@ const ChobaInput = () => {
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error: {error.message}</p>
 
+  // 得意先データのソート（AIT_AITCDの昇順）
+  const arrayUrisaki2 = data.urisaki2
+  arrayUrisaki2.sort(function(a, b) {
+    if (a.AIT_AITCD < b.AIT_AITCD) return -1
+    if (a.AIT_AITCD > b.AIT_AITCD) return 1
+    return 0
+  })
+
+  // 商品データのソート（HIZ_HINNMの昇順）
+  const arrayGzaikozan = data.gzaikozan
+  arrayGzaikozan.sort(function(a, b) {
+    if (a.HIZ_HINNM < b.HIZ_HINNM) return -1
+    if (a.HIZ_HINNM > b.HIZ_HINNM) return 1
+    return 0
+  })
+
   return (
     <div>
       <Helmet>
@@ -143,7 +159,7 @@ const ChobaInput = () => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Autocomplete
-                options={data.urisaki2}
+                options={arrayUrisaki2}
                 getOptionLabel={(option) => option.AIT_AITCD + " - " + option.AIT_MEISJ}
                 style={{ width: 400 }}
                 renderInput={(params) =>
@@ -184,7 +200,7 @@ const ChobaInput = () => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Autocomplete
-                options={data.gzaikozan}
+                options={arrayGzaikozan}
                 getOptionLabel={(option) =>
                   option.GZA_ZSHNO + " - " +
                   option.HIZ_HINNM + " " +
