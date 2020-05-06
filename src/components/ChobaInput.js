@@ -57,6 +57,8 @@ const GET_DATA = gql`
       GZA_IKUCD
   	  GZA_TAICD
       GZA_HTANK
+      TIKU_IKUNM
+      TTAI_TAINM
     }
 
   }
@@ -189,8 +191,8 @@ const ChobaInput = () => {
                   option.HIZ_SIZEN + " " +
                   option.HIZ_YORYO + option.HIZ_JURKB + " " +
                   option.HIZ_IRISU + " " +
-                  option.GZA_IKUCD + " " +
-                  option.GZA_TAICD
+                  option.TIKU_IKUNM + " " +
+                  option.TTAI_TAINM
                 }
                 style={{ width: 400 }}
                 onChange={(e, newval) => doShohinChange(e, newval)}
